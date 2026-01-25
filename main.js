@@ -395,8 +395,9 @@ async function prepare(p) {
 /**
  * @param {UserlandRW} userlandRW
  * @param {boolean} wkOnly
+ * @param {boolean} autoPayload
  */
-async function main(userlandRW, wkOnly = false) {
+async function main(userlandRW, wkOnly = false, autoPayload = false) {
     const debug = false;
 
     const { p, chain } = await prepare(userlandRW);
@@ -1182,6 +1183,14 @@ async function main(userlandRW, wkOnly = false) {
     await new Promise(resolve => setTimeout(resolve, 300));
     await switchPage("payloads-view");
 
+    // Automatisch etaHEN laden indien gevraagd
+    if (autoPayload) {
+        setTimeout(() => {
+            window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, {
+                detail: { displayTitle: 'etaHEN', fileName: 'etaHEN-2.5B.bin' }
+            }));
+        }, 500);
+    }
 
     while (true) {
 

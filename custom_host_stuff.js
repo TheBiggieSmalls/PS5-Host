@@ -37,10 +37,29 @@ async function run(wkonly = false, animate = true) {
     }
 
     try {
-        await main(window.p, wkonly); // if all goes well, this should block forever
+        // Run the main kernel exploit logic
+        // We don't 'await' this if we want to trigger something immediately after it initializes
+        const mainPromise = main(window.p, wkonly); 
+
+        // Check if we have an auto-payload requested
+        const autoPayloadName = sessionStorage.getItem("auto_payload_target");
+        if (autoPayloadName) {
+            // Clear it so it doesn't loop on manual reloads
+            sessionStorage.removeItem("auto_payload_target");
+            
+            // Wait a brief moment for the main loop listeners to be ready
+            setTimeout(() => {
+                const payload = payload_map.find(p => p.displayTitle === autoPayloadName);
+                if (payload) {
+                    log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
+                    window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
+                }
+            }, 1500); // 1.5 second delay to ensure elfldr/listeners are active
+        }
+
+        await mainPromise;
     } catch (error) {
         log("Kernel exploit/main() failed: " + error, LogLevel.ERROR);
-        // p.write8(new int64(0,0), 0); // crash
     }
 
     log("Retrying in 4 seconds...", LogLevel.LOG);
@@ -199,17 +218,25 @@ function registerL2ButtonHandler() {
 const TOAST_SUCCESS_TIMEOUT = 2000;
 const TOAST_ERROR_TIMEOUT = 5000;
 
-function showToast(message, timeout = 2000) {
+function showToast(message, timeout = 2000, type = "") {
     const toastContainer = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.textContent = message;
 
+    // ألوان حسب النوع
+    if (type === "wifi") {
+        toast.style.backgroundColor = "#007aff"; // أزرق
+    } else if (type === "ethernet") {
+        toast.style.backgroundColor = "#28a745"; // أخضر
+    } else if (type === "offline") {
+        toast.style.backgroundColor = "#dc3545"; // أحمر
+    }
+
+    toast.textContent = message;
     toastContainer.appendChild(toast);
 
-    // Trigger reflow to enable animation
+    // Trigger reflow
     toast.offsetHeight;
-
     toast.classList.add('show');
 
     if (timeout > 0) {
@@ -220,6 +247,7 @@ function showToast(message, timeout = 2000) {
 
     return toast;
 }
+
 
 function updateToastMessage(toast, message) {
     if (!toast) {
@@ -284,4 +312,9 @@ function populatePayloadsPage(wkOnlyMode = false) {
         payloadsView.appendChild(payloadButton);
     }
 
+}
+// Function to set the auto-payload and start the jailbreak
+async function runWithAutoPayload(payloadName) {
+    sessionStorage.setItem("auto_payload_target", payloadName);
+    await run(false, true);
 }

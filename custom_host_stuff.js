@@ -54,7 +54,7 @@ async function run(wkonly = false, animate = true) {
                     log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
                     window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
                 }
-            }, 1500); // 1.5 second delay to ensure elfldr/listeners are active
+            }, 4000); // 1.5 second delay to ensure elfldr/listeners are active
         }
 
         await mainPromise;

@@ -1190,6 +1190,8 @@ async function main(userlandRW, wkOnly = false) {
         let toast = showToast(`${payload_info.displayTitle}: Waiting in queue...`, -1);
         queue.push({ payload_info, toast });
     });
+// Signal that the main loop is ready to accept payloads
+    window.dispatchEvent(new CustomEvent('mainloop_ready'));
 
     // await log("Done, switching to payloads screen...", LogLevel.INFO);
     await new Promise(resolve => setTimeout(resolve, 300));

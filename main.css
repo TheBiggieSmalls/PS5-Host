@@ -222,7 +222,6 @@ a:focus {
     box-sizing: border-box;
     overflow-y: auto;
 }
-/* الحالة العامة */
 #console-view {
   border: 2px solid gray;
   border-radius: 8px;
@@ -232,13 +231,11 @@ a:focus {
   transition: box-shadow 0.3s, border-color 0.3s;
 }
 
-/* متصل */
 #console-view.online {
   border-color: lime;
   box-shadow: 0 0 15px lime;
 }
 
-/* غير متصل */
 #console-view.offline {
   border-color: red;
   box-shadow: 0 0 15px red;

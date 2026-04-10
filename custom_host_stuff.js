@@ -47,20 +47,14 @@ async function run(wkonly = false, animate = true) {
             // Clear it so it doesn't loop on manual reloads
             sessionStorage.removeItem("auto_payload_target");
             
-            // Fire as soon as main() signals the loop is ready
-            window.addEventListener('mainloop_ready', function handler() {
-                window.removeEventListener('mainloop_ready', handler);
+            // Wait a brief moment for the main loop listeners to be ready
+            setTimeout(() => {
                 const payload = payload_map.find(p => p.displayTitle === autoPayloadName);
                 if (payload) {
-                    log("Waiting a moment before loading " + autoPayloadName + "...", LogLevel.INFO);
-            
-            // Add a 2-second timeout (2000 milliseconds)
-            setTimeout(() => {
-                log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
-                window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
-            }, 3500); 
-        }
-            }, { once: true });
+                    log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
+                    window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
+                }
+            }, 5000); // 5 second delay to ensure elfldr/listeners are active
         }
 
         await mainPromise;

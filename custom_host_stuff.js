@@ -273,6 +273,7 @@ async function removeToast(toast) {
 }
 
 
+// Zoek de functie populatePayloadsPage in custom_host_stuff.js
 function populatePayloadsPage(wkOnlyMode = false) {
     const payloadsView = document.getElementById('payloads-view');
 
@@ -280,44 +281,20 @@ function populatePayloadsPage(wkOnlyMode = false) {
         payloadsView.removeChild(payloadsView.firstChild);
     }
 
-    const payloads = payload_map;
-
+    // ... (bestaande logica om knoppen aan te maken blijft gelijk) ...
     for (const payload of payloads) {
-        if (wkOnlyMode && !payload.toPort && !payload.customAction) {
-            continue;
-        }
-
-        if (payload.supportedFirmwares && !payload.supportedFirmwares.some(fwPrefix => window.fw_str.startsWith(fwPrefix))) {
-            continue;
-        }
-
-        const payloadButton = document.createElement("a");
-        payloadButton.classList.add("btn");
-        payloadButton.classList.add("w-100");
-        payloadButton.tabIndex = 0;
-
-        const payloadTitle = document.createElement("p");
-        payloadTitle.classList.add("payload-btn-title");
-        payloadTitle.textContent = payload.displayTitle;
-
-        const payloadDescription = document.createElement("p");
-        payloadDescription.classList.add("payload-btn-description");
-        payloadDescription.textContent = payload.description;
-
-        const payloadInfo = document.createElement("p");
-        payloadInfo.classList.add("payload-btn-info");
-        payloadInfo.innerHTML = `v${payload.version} &centerdot; ${payload.author}`;
-
-        payloadButton.appendChild(payloadTitle);
-        payloadButton.appendChild(payloadDescription);
-        payloadButton.appendChild(payloadInfo);
-        payloadButton.addEventListener("click", function () {
-            window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
-        });
-
+        // ... (houd alle bestaande code binnen de loop aan)
+        
+        // Voeg aan het einde van de loop de knop toe zoals voorheen
         payloadsView.appendChild(payloadButton);
     }
 
+    // VOEG DIT TOE aan het einde van de functie:
+    const overlay = document.createElement("div");
+    overlay.id = "payload-loading-overlay";
+    overlay.className = "payload-overlay";
+    overlay.innerHTML = "<h1>Loading Auto-Jailbreak + etaHEN</h1><p>Please wait...</p>";
+    payloadsView.appendChild(overlay);
 }
 // Function to set the auto-payload and start the jailbreak
 async function runWithAutoPayload(payloadName) {

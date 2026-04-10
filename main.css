@@ -31,7 +31,6 @@ body {
     overflow: hidden;
     box-sizing: border-box;
 }
-
 input:focus {
     outline:none;
 }
@@ -328,3 +327,55 @@ a:focus {
 .mb-2 { margin-bottom: 0.5rem !important; }
 .mb-3 { margin-bottom: 1rem !important; }
 .mb-4 { margin-bottom: 1.5rem !important; }
+
+.auto-loader-box {
+    background-color: var(--surface-color-primary);
+    color: white;
+    padding: 3rem 5rem;
+    border-radius: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0.7; transform: scale(0.98); }
+}
+/* Verberg de gegenereerde knoppen in de payloads view */
+#payloads-view .btn {
+    display: none !important;
+}
+
+/* De stijl voor de nieuwe overlay */
+.payload-overlay {
+    grid-column: 1 / -1; /* Zorgt dat het over de hele breedte van de grid gaat */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(18, 18, 18, 0.8); /* Matcht je achtergrondkleur */
+    color: white;
+    text-align: center;
+    border-radius: 1.5rem;
+    padding: 2rem;
+}
+
+.payload-overlay h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* Hergebruik de animatie uit de vorige stap */
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}

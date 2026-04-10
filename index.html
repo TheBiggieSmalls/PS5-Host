@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title> PS5 UMTX2 Jailbreak  </title>
+    <title> PS5 UMTX2 Auto-Jailbreak  </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="main.css">
 </head>
@@ -12,7 +12,7 @@
 <body>
     <!-- Row 1 -->
     <div class="p-2">
-        <h1 class="text-center">PS5 UMTX2 Jailbreak (5.xx)</h1>
+        <h1 class="text-center">PS5 UMTX2 Auto-Jailbreak (5.xx)</h1>
         <div id="status-container" style="text-align: center; margin-top: 10px;">
         <p style="text-align: center"><img src="img/PS_Loaders.png" width="128" height="101" alt=""><img id="statusImage" src="offline.png" width="32" height="32" alt="Connection Status" /></p>
         </div>
@@ -23,13 +23,19 @@
     <!-- Row 2 -->
     <div id="main-content">
     <div id="pre-jb-view" class="d-flex align-items-center justify-content-center flex-direction-column selected">
+        <div id="auto-jb-loader" class="auto-loader-box">
+        Loading Auto-Jailbreak...
+    </div>
+
+    <div style="display: none;">
         <a tabindex="0" class="btn fw-bold" id="run-jb" onclick="run()"><img src="img/01.png" width="64" height="64" alt=""><br>Jailbreak</a>
         
-        <a tabindex="0" class="btn fw-bold" id="run-eta" onclick="runWithAutoPayload('etaHEN-2.5B')"><img src="img/03.png" width="64" height="64" alt=""><br>Jailbreak + etaHEN</a>
+        <a tabindex="0" class="btn fw-bold" id="run-eta" onclick="runWithAutoPayload('etaHEN')"><img src="img/03.png" width="64" height="64" alt=""><br>Jailbreak + etaHEN</a>
 
         <a tabindex="0" class="btn" style="padding: 0.5rem 2rem; font-size: 1rem;" id="run-wk-only"
             onclick="run(true)"><img src="img/02.png" width="64" height="64" alt=""><br>Webkit-only (sender)</a>
     </div>
+</div>
 
         <div id="console-view">
             <div id="console" class="log"></div>
@@ -70,11 +76,27 @@
         registerAppCacheEventHandlers();
         registerL2ButtonHandler();
         window.onload = function () {
-            let autoload = sessionStorage.getItem(SESSIONSTORE_ON_LOAD_AUTORUN_KEY);
-            if (autoload) {
-                run(autoload == "wkonly", false);
+    let autoload = sessionStorage.getItem(SESSIONSTORE_ON_LOAD_AUTORUN_KEY);
+    if (autoload) {
+        run(autoload == "wkonly", false);
+    } else {
+        const appCache = window.applicationCache;
+
+        if (appCache.status === appCache.IDLE || appCache.status === appCache.UNCACHED) {
+            // Already cached or no manifest, run immediately
+            runWithAutoPayload('etaHEN');
+        } else {
+            // Wait for caching to finish before running
+            function onCacheReady() {
+                appCache.removeEventListener('cached', onCacheReady);
+                appCache.removeEventListener('noupdate', onCacheReady);
+                runWithAutoPayload('etaHEN');
             }
-        };
+            appCache.addEventListener('cached', onCacheReady);
+            appCache.addEventListener('noupdate', onCacheReady);
+        }
+    }
+};
     </script>
 </body>
 

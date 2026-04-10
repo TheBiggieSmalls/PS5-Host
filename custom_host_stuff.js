@@ -60,6 +60,8 @@ async function run(wkonly = false, animate = true) {
                 window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
             }, 3500); 
         }
+            }, { once: true });
+        }
 
         await mainPromise;
     } catch (error) {

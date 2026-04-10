@@ -52,10 +52,13 @@ async function run(wkonly = false, animate = true) {
                 window.removeEventListener('mainloop_ready', handler);
                 const payload = payload_map.find(p => p.displayTitle === autoPayloadName);
                 if (payload) {
-                    log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
-                    window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
-                }
-            }, { once: true });
+                    log("Waiting a moment before loading " + autoPayloadName + "...", LogLevel.INFO);
+            
+            // Add a 2-second timeout (2000 milliseconds)
+            setTimeout(() => {
+                log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
+                window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
+            }, 3500); 
         }
 
         await mainPromise;

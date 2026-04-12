@@ -62,6 +62,26 @@ const payload_map = [
         toPort: 9021
     },
 	{
+        displayTitle: "Backpork",
+        description: "A background payload for PlayStation 5 that automatically allows system library sideloading.",
+        fileName: "ps5-backpork.elf",
+        author: "BestPig",
+        projectSource: "https://github.com/BestPig/BackPork",
+        binarySource: "https://github.com/BestPig/BackPork/releases/tag/0.1",
+        version: "0.1",
+        toPort: 9021
+    },
+	{
+        displayTitle: "shadowmountplus",
+        description: "A background payload for PlayStation 5 that automatically allows system library sideloading.",
+        fileName: "shadowmountplus.elf",
+        author: "Drakmor",
+        projectSource: "https://github.com/drakmor/ShadowMountPlus",
+        binarySource: "https://github.com/drakmor/ShadowMountPlus/releases/tag/1.6test8-fix1",
+        version: "1.6test7-fix2",
+        toPort: 9021
+    },
+	{
         displayTitle: "ftpsrv v0.19",
         description: "FTP server. Runs on port 2121.",
         fileName: "ftpsrv-ps5.elf",

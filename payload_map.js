@@ -47,7 +47,18 @@ const payload_map = [
         author: "sleirsgoevy, john-tornblom, EchoStretch, buzzer-re, idlesauce, BestPig, LightningMods, zecoxao",
         projectSource: "https://github.com/EchoStretch/ps4jb-payloads/",
         binarySource: "https://github.com/EchoStretch/ps4jb-payloads/actions/runs/17254240982",
-        version: "1.03",
+        version: "1.06",
+        supportedFirmwares: ["3.", "4.", "5."],
+        toPort: 9021
+    },
+	{
+        displayTitle: "lapy jb daemon",
+        description: "Lapy Daemon enabler",
+        fileName: "lapy_jb_daemon.elf",
+        author: "sleirsgoevy, john-tornblom, EchoStretch, buzzer-re, idlesauce, BestPig, LightningMods, zecoxao",
+        projectSource: "https://github.com/EchoStretch/ps4jb-payloads/",
+        binarySource: "https://github.com/EchoStretch/ps4jb-payloads/actions/runs/17254240982",
+        version: "1.0",
         supportedFirmwares: ["3.", "4.", "5."],
         toPort: 9021
     },
@@ -78,7 +89,7 @@ const payload_map = [
         author: "Drakmor",
         projectSource: "https://github.com/drakmor/ShadowMountPlus",
         binarySource: "https://github.com/drakmor/ShadowMountPlus/releases/tag/1.6test8-fix1",
-        version: "1.6test7-fix2",
+        version: "1.6test15-fix2",
         toPort: 9021
     },
 	{

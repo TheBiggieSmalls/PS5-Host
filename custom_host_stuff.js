@@ -65,33 +65,68 @@ async function run(wkonly = false, animate = true) {
             try { chain = JSON.parse(autoChainRaw); } catch(e) { chain = []; }
 
             if (chain.length > 0) {
-                // Use the same initial delay as the single auto-payload (etaHEN button) so
-                // elfldr has fully loaded before the first chained payload is sent.
-                // Increase CHAIN_ELFLDR_WARMUP_MS here if kstuff still fires too early.
-                const CHAIN_ELFLDR_WARMUP_MS = 5000;
+                // How long to wait between each payload once the chain has started.
                 const CHAIN_BETWEEN_PAYLOADS_MS = 3000;
+                // Fallback: if elfldr's ready-signal is never seen in the console
+                // (e.g. the log message changed), start the chain after this many ms anyway.
+                const CHAIN_FALLBACK_TIMEOUT_MS = 60000;
 
-                chain.forEach((payloadName, index) => {
-                    const delay = CHAIN_ELFLDR_WARMUP_MS + index * CHAIN_BETWEEN_PAYLOADS_MS;
-                    setTimeout(() => {
-                        const payload = payload_map.find(p => p.displayTitle === payloadName);
-                        if (payload) {
-                            log("Chain [" + (index + 1) + "/" + chain.length + "] Loading " + payloadName + "...", LogLevel.INFO);
-                            window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
-                        } else {
-                            log("Chain: payload not found in map: " + payloadName, LogLevel.ERROR);
-                        }
-                    }, delay);
-                });
+                // Keywords that indicate elfldr is up and listening on port 9021.
+                // We watch the #console div for any log line containing one of these.
+                const ELFLDR_READY_SIGNALS = ["elfldr", "9021", "elf loader", "listening"];
 
-                // Close browser after all payloads have fired + extra buffer
-                if (shouldClose) {
-                    const closeDelay = CHAIN_ELFLDR_WARMUP_MS + chain.length * CHAIN_BETWEEN_PAYLOADS_MS + 3000;
-                    setTimeout(() => {
-                        log("All payloads loaded. Closing browser...", LogLevel.INFO);
-                        window.close();
-                    }, closeDelay);
+                let chainStarted = false;
+
+                function startChain() {
+                    if (chainStarted) return;
+                    chainStarted = true;
+                    if (observer) observer.disconnect();
+
+                    log("elfldr detected as ready — starting payload chain...", LogLevel.INFO);
+
+                    chain.forEach((payloadName, index) => {
+                        const delay = index * CHAIN_BETWEEN_PAYLOADS_MS;
+                        setTimeout(() => {
+                            const payload = payload_map.find(p => p.displayTitle === payloadName);
+                            if (payload) {
+                                log("Chain [" + (index + 1) + "/" + chain.length + "] Loading " + payloadName + "...", LogLevel.INFO);
+                                window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
+                            } else {
+                                log("Chain: payload not found in map: " + payloadName, LogLevel.ERROR);
+                            }
+                        }, delay);
+                    });
+
+                    // Close browser after all payloads have fired + small buffer
+                    if (shouldClose) {
+                        const closeDelay = chain.length * CHAIN_BETWEEN_PAYLOADS_MS + 3000;
+                        setTimeout(() => {
+                            log("All payloads loaded. Closing browser...", LogLevel.INFO);
+                            window.close();
+                        }, closeDelay);
+                    }
                 }
+
+                // Watch the #console div for elfldr ready signals via MutationObserver
+                let observer = null;
+                const consoleEl = document.getElementById("console");
+                if (consoleEl) {
+                    observer = new MutationObserver(() => {
+                        const text = consoleEl.innerText.toLowerCase();
+                        if (ELFLDR_READY_SIGNALS.some(sig => text.includes(sig))) {
+                            startChain();
+                        }
+                    });
+                    observer.observe(consoleEl, { childList: true, subtree: true });
+                }
+
+                // Fallback: start chain after timeout even if signal was never seen
+                setTimeout(() => {
+                    if (!chainStarted) {
+                        log("elfldr signal not detected after " + (CHAIN_FALLBACK_TIMEOUT_MS / 1000) + "s — starting chain anyway (fallback)...", LogLevel.INFO);
+                        startChain();
+                    }
+                }, CHAIN_FALLBACK_TIMEOUT_MS);
             }
         }
 

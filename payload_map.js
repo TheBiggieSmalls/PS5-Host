@@ -154,5 +154,24 @@ const payload_map = [
         version: "2.4B",
         toPort: 9021
     },
-	
+    {
+        displayTitle: "klogsrv-ps5.elf",
+        description: "TODO: add description",
+        fileName: "klogsrv-ps5.elf",
+        author: "TODO: add author",
+        projectSource: "TODO: add source URL",
+        binarySource: "TODO: add binary URL",
+        version: "1.0",
+        toPort: 9021
+    },
+    {
+        displayTitle: "kstuff-d.elf",
+        description: "TODO: add description",
+        fileName: "kstuff-d.elf",
+        author: "TODO: add author",
+        projectSource: "TODO: add source URL",
+        binarySource: "TODO: add binary URL",
+        version: "1.0",
+        toPort: 9021
+    },
 ];

@@ -41,20 +41,54 @@ async function run(wkonly = false, animate = true) {
         // We don't 'await' this if we want to trigger something immediately after it initializes
         const mainPromise = main(window.p, wkonly); 
 
-        // Check if we have an auto-payload requested
+        // Check if we have a single auto-payload requested
         const autoPayloadName = sessionStorage.getItem("auto_payload_target");
         if (autoPayloadName) {
-            // Clear it so it doesn't loop on manual reloads
             sessionStorage.removeItem("auto_payload_target");
-            
-            // Wait a brief moment for the main loop listeners to be ready
             setTimeout(() => {
                 const payload = payload_map.find(p => p.displayTitle === autoPayloadName);
                 if (payload) {
                     log("Automatically loading " + autoPayloadName + "...", LogLevel.INFO);
                     window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
                 }
-            }, 5000); // 5 second delay to ensure elfldr/listeners are active
+            }, 5000);
+        }
+
+        // Check if we have a payload chain requested
+        const autoChainRaw = sessionStorage.getItem("auto_payload_chain");
+        if (autoChainRaw) {
+            sessionStorage.removeItem("auto_payload_chain");
+            const shouldClose = sessionStorage.getItem("auto_payload_chain_close") === "1";
+            sessionStorage.removeItem("auto_payload_chain_close");
+
+            let chain;
+            try { chain = JSON.parse(autoChainRaw); } catch(e) { chain = []; }
+
+            if (chain.length > 0) {
+                // Fire each payload in sequence, 8 seconds apart to give elfldr time to forward them
+                // First payload fires after 5s (elfldr warmup), each subsequent one 8s later
+                chain.forEach((payloadName, index) => {
+                    const delay = 5000 + index * 8000;
+                    setTimeout(() => {
+                        const payload = payload_map.find(p => p.displayTitle === payloadName);
+                        if (payload) {
+                            log("Chain [" + (index + 1) + "/" + chain.length + "] Loading " + payloadName + "...", LogLevel.INFO);
+                            window.dispatchEvent(new CustomEvent(MAINLOOP_EXECUTE_PAYLOAD_REQUEST, { detail: payload }));
+                        } else {
+                            log("Chain: payload not found in map: " + payloadName, LogLevel.ERROR);
+                        }
+                    }, delay);
+                });
+
+                // Close browser after all payloads have fired + extra buffer
+                if (shouldClose) {
+                    const closeDelay = 5000 + chain.length * 8000 + 3000;
+                    setTimeout(() => {
+                        log("All payloads loaded. Closing browser...", LogLevel.INFO);
+                        window.close();
+                    }, closeDelay);
+                }
+            }
         }
 
         await mainPromise;
@@ -316,5 +350,17 @@ function populatePayloadsPage(wkOnlyMode = false) {
 // Function to set the auto-payload and start the jailbreak
 async function runWithAutoPayload(payloadName) {
     sessionStorage.setItem("auto_payload_target", payloadName);
+    await run(false, true);
+}
+
+// Function to run a chain of payloads in sequence after the jailbreak,
+// then optionally close the browser to the home menu.
+// payloadNames: array of displayTitle strings matching entries in payload_map
+// closeAfter:   if true, calls window.close() after all payloads are sent
+async function runWithAutoPayloadChain(payloadNames, closeAfter = false) {
+    sessionStorage.setItem("auto_payload_chain", JSON.stringify(payloadNames));
+    if (closeAfter) {
+        sessionStorage.setItem("auto_payload_chain_close", "1");
+    }
     await run(false, true);
 }

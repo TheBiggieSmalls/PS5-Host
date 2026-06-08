@@ -69,23 +69,24 @@ async function run(wkonly = false, animate = true) {
                 const CHAIN_BETWEEN_PAYLOADS_MS = 3000;
                 // Fallback: if elfldr's ready-signal is never seen in the console
                 // (e.g. the log message changed), start the chain after this many ms anyway.
-                const CHAIN_FALLBACK_TIMEOUT_MS = 60000;
 
-                // Keywords that indicate elfldr is up and listening on port 9021.
-                // We watch the #console div for any log line containing one of these.
-                const ELFLDR_READY_SIGNALS = ["elfldr", "9021", "elf loader", "listening"];
+                // Exact log line that elfldr prints when it is ready to receive payloads.
+                const ELFLDR_READY_SIGNAL = "elf loader listening on port 9020";
+
+                // Small delay after the signal appears before firing the first payload.
+                const CHAIN_START_DELAY_MS = 2000;
 
                 let chainStarted = false;
 
                 function startChain() {
                     if (chainStarted) return;
                     chainStarted = true;
-                    if (observer) observer.disconnect();
+                    observer.disconnect();
 
-                    log("elfldr detected as ready — starting payload chain...", LogLevel.INFO);
+                    log("elfldr ready — starting payload chain in 2 seconds...", LogLevel.INFO);
 
                     chain.forEach((payloadName, index) => {
-                        const delay = index * CHAIN_BETWEEN_PAYLOADS_MS;
+                        const delay = CHAIN_START_DELAY_MS + index * CHAIN_BETWEEN_PAYLOADS_MS;
                         setTimeout(() => {
                             const payload = payload_map.find(p => p.displayTitle === payloadName);
                             if (payload) {
@@ -99,7 +100,7 @@ async function run(wkonly = false, animate = true) {
 
                     // Close browser after all payloads have fired + small buffer
                     if (shouldClose) {
-                        const closeDelay = chain.length * CHAIN_BETWEEN_PAYLOADS_MS + 3000;
+                        const closeDelay = CHAIN_START_DELAY_MS + chain.length * CHAIN_BETWEEN_PAYLOADS_MS + 3000;
                         setTimeout(() => {
                             log("All payloads loaded. Closing browser...", LogLevel.INFO);
                             window.close();
@@ -107,26 +108,14 @@ async function run(wkonly = false, animate = true) {
                     }
                 }
 
-                // Watch the #console div for elfldr ready signals via MutationObserver
-                let observer = null;
+                // Watch the #console div for the exact elfldr ready line
                 const consoleEl = document.getElementById("console");
-                if (consoleEl) {
-                    observer = new MutationObserver(() => {
-                        const text = consoleEl.innerText.toLowerCase();
-                        if (ELFLDR_READY_SIGNALS.some(sig => text.includes(sig))) {
-                            startChain();
-                        }
-                    });
-                    observer.observe(consoleEl, { childList: true, subtree: true });
-                }
-
-                // Fallback: start chain after timeout even if signal was never seen
-                setTimeout(() => {
-                    if (!chainStarted) {
-                        log("elfldr signal not detected after " + (CHAIN_FALLBACK_TIMEOUT_MS / 1000) + "s — starting chain anyway (fallback)...", LogLevel.INFO);
+                const observer = new MutationObserver(() => {
+                    if (consoleEl.innerText.toLowerCase().includes(ELFLDR_READY_SIGNAL)) {
                         startChain();
                     }
-                }, CHAIN_FALLBACK_TIMEOUT_MS);
+                });
+                observer.observe(consoleEl, { childList: true, subtree: true });
             }
         }
 

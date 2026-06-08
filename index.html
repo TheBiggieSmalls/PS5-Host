@@ -22,15 +22,14 @@
     </div>
     <!-- Row 2 -->
     <div id="main-content">
-    <div id="pre-jb-view" class="d-flex align-items-center justify-content-center flex-direction-column selected">
-        <a tabindex="0" class="btn fw-bold" id="run-jb" onclick="run()"><img src="img/01.png" width="64" height="64" alt=""><br>Jailbreak</a>
-        
-        <a tabindex="0" class="btn fw-bold" id="run-fpkg" onclick="runWithAutoPayloadChain(['ps5-kstuff lite', 'shadowmountplus'], true)"><img src="img/01.png" width="64" height="64" alt=""><br>Jailbreak + FPKG</a>
+    <div id="pre-jb-view" class="selected" style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; align-content:center; justify-items:center; padding:1.2rem;">
+        <a tabindex="0" class="btn fw-bold" id="run-jb" onclick="run()" style="width:100%; text-align:center;"><img src="img/01.png" width="64" height="64" alt=""><br>Jailbreak</a>
 
-        <a tabindex="0" class="btn fw-bold" id="run-eta" onclick="runWithAutoPayload('etaHEN-2.5B')"><img src="img/03.png" width="64" height="64" alt=""><br>Jailbreak + etaHEN</a>
+        <a tabindex="0" class="btn fw-bold" id="run-fpkg" onclick="runWithAutoPayloadChain(['ps5-kstuff lite', 'shadowmountplus', 'Backpork'], true)" style="width:100%; text-align:center;"><img src="img/01.png" width="64" height="64" alt=""><br>Jailbreak + FPKG</a>
 
-        <a tabindex="0" class="btn" style="padding: 0.5rem 2rem; font-size: 1rem;" id="run-wk-only"
-            onclick="run(true)"><img src="img/02.png" width="64" height="64" alt=""><br>Webkit-only (sender)</a>
+        <a tabindex="0" class="btn fw-bold" id="run-eta" onclick="runWithAutoPayload('etaHEN-2.5B')" style="width:100%; text-align:center;"><img src="img/03.png" width="64" height="64" alt=""><br>Jailbreak + etaHEN</a>
+
+        <a tabindex="0" class="btn" id="run-wk-only" onclick="run(true)" style="width:100%; text-align:center; font-size:1rem;"><img src="img/02.png" width="64" height="64" alt=""><br>Webkit-only (sender)</a>
     </div>
 
         <div id="console-view">

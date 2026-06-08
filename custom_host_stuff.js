@@ -65,10 +65,14 @@ async function run(wkonly = false, animate = true) {
             try { chain = JSON.parse(autoChainRaw); } catch(e) { chain = []; }
 
             if (chain.length > 0) {
-                // Fire each payload in sequence, 8 seconds apart to give elfldr time to forward them
-                // First payload fires after 5s (elfldr warmup), each subsequent one 8s later
+                // Use the same initial delay as the single auto-payload (etaHEN button) so
+                // elfldr has fully loaded before the first chained payload is sent.
+                // Increase CHAIN_ELFLDR_WARMUP_MS here if kstuff still fires too early.
+                const CHAIN_ELFLDR_WARMUP_MS = 5000;
+                const CHAIN_BETWEEN_PAYLOADS_MS = 3000;
+
                 chain.forEach((payloadName, index) => {
-                    const delay = 5000 + index * 8000;
+                    const delay = CHAIN_ELFLDR_WARMUP_MS + index * CHAIN_BETWEEN_PAYLOADS_MS;
                     setTimeout(() => {
                         const payload = payload_map.find(p => p.displayTitle === payloadName);
                         if (payload) {
@@ -82,7 +86,7 @@ async function run(wkonly = false, animate = true) {
 
                 // Close browser after all payloads have fired + extra buffer
                 if (shouldClose) {
-                    const closeDelay = 5000 + chain.length * 8000 + 3000;
+                    const closeDelay = CHAIN_ELFLDR_WARMUP_MS + chain.length * CHAIN_BETWEEN_PAYLOADS_MS + 3000;
                     setTimeout(() => {
                         log("All payloads loaded. Closing browser...", LogLevel.INFO);
                         window.close();

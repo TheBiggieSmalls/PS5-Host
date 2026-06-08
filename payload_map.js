@@ -174,4 +174,14 @@ const payload_map = [
         version: "1.0",
         toPort: 9021
     },
+    {
+        displayTitle: "pldmgr.elf",
+        description: "TODO: add description",
+        fileName: "pldmgr.elf",
+        author: "TODO: add author",
+        projectSource: "TODO: add source URL",
+        binarySource: "TODO: add binary URL",
+        version: "1.0",
+        toPort: 9021
+    },
 ];

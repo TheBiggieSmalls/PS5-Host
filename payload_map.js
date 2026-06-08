@@ -155,7 +155,7 @@ const payload_map = [
         toPort: 9021
     },
     {
-        displayTitle: "klogsrv-ps5.elf",
+        displayTitle: "klogsrv-ps5",
         description: "TODO: add description",
         fileName: "klogsrv-ps5.elf",
         author: "TODO: add author",
@@ -165,7 +165,7 @@ const payload_map = [
         toPort: 9021
     },
     {
-        displayTitle: "kstuff-d.elf",
+        displayTitle: "kstuff-d",
         description: "TODO: add description",
         fileName: "kstuff-d.elf",
         author: "TODO: add author",

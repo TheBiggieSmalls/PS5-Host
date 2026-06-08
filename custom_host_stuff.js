@@ -68,8 +68,8 @@ async function run(wkonly = false, animate = true) {
                 // Use the same initial delay as the single auto-payload (etaHEN button) so
                 // elfldr has fully loaded before the first chained payload is sent.
                 // Increase CHAIN_ELFLDR_WARMUP_MS here if kstuff still fires too early.
-                const CHAIN_ELFLDR_WARMUP_MS = 6000;
-                const CHAIN_BETWEEN_PAYLOADS_MS = 4000;
+                const CHAIN_ELFLDR_WARMUP_MS = 5000;
+                const CHAIN_BETWEEN_PAYLOADS_MS = 3000;
 
                 chain.forEach((payloadName, index) => {
                     const delay = CHAIN_ELFLDR_WARMUP_MS + index * CHAIN_BETWEEN_PAYLOADS_MS;
